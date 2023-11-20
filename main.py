@@ -46,7 +46,9 @@ async def create_fax_data(info: Info):
 
 @app.post("/uploadfile")
 async def upload_file(file: UploadFile = File(...)):
-    with tempfile.NamedTemporaryFile(delete=False, dir=".", suffix=".pdf") as temp_file:
+    with tempfile.NamedTemporaryFile(
+        delete=False, dir="tmp", suffix=".pdf"
+    ) as temp_file:
         # リクエストされたファイルを一時保管（なせdelete=Trueだと権限エラーになる）
         shutil.copyfileobj(file.file, temp_file)
         tmp_path = Path(temp_file.name)
@@ -60,7 +62,7 @@ async def upload_file(file: UploadFile = File(...)):
             )
 
     # 一時保管したファイルを削除
-    # os.remove(tmp_path)
+    os.remove(tmp_path)
 
     # TODO：何かDB登録が必要であれば記述
 
