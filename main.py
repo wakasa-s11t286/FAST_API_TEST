@@ -60,7 +60,7 @@ async def upload_file(file: UploadFile = File(...)):
             )
 
     # 一時保管したファイルを削除
-    os.remove(tmp_path)
+    # os.remove(tmp_path)
 
     # TODO：何かDB登録が必要であれば記述
 
