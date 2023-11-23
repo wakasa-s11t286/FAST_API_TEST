@@ -19,6 +19,7 @@ class SlackService:
     def chatMessage(text):
         data = {"channel": CHANNEL, "text": text}
         requests.post(chat_url, data=data)
+        print("return ", requests.json())
 
     # ファイルアップロード
     @staticmethod
@@ -38,9 +39,13 @@ class SlackService:
             data=data,
             files=files,
         )
+        print("return ", requests.json())
 
     # 宛先、差出不明のfaxを通知
     def unknownFileNotice(files):
+        print(TOKEN)
+        print(CHANNEL)
+
         # メッセージの送信
         text = "送信先または送信元が不明のFaxを受信しました。"
         SlackService.chatMessage(text)
