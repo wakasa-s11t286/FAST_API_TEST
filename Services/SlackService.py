@@ -4,6 +4,7 @@ import requests
 from dotenv import load_dotenv
 
 load_dotenv()
+
 TOKEN = os.environ.get("SLACK_TOKEN")
 CHANNEL = os.environ.get("SLACK_CHANNEL")
 
