@@ -18,8 +18,8 @@ class SlackService:
     @staticmethod
     def chatMessage(text):
         data = {"channel": CHANNEL, "text": text}
-        requests.post(chat_url, data=data)
-        print("return ", requests.json())
+        r = requests.post(chat_url, data=data)
+        print("return ", r.json())
 
     # ファイルアップロード
     @staticmethod
@@ -34,12 +34,12 @@ class SlackService:
             "filename": fileName,
             "filetype": fileType,
         }
-        requests.post(
+        r = requests.post(
             upload_url,
             data=data,
             files=files,
         )
-        print("return ", requests.json())
+        print("return ", r.json())
 
     # 宛先、差出不明のfaxを通知
     def unknownFileNotice(files):
