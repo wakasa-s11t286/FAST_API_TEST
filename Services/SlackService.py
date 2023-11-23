@@ -10,7 +10,7 @@ CHANNEL = os.environ.get("SLACK_CHANNEL")
 
 chat_url = "https://slack.com/api/chat.postMessage"
 upload_url = "https://slack.com/api/files.upload"
-headers = {"Authorization": "Bearer " + TOKEN}
+# headers = {"Authorization": "Bearer " + TOKEN}
 
 
 class SlackService:
@@ -18,7 +18,7 @@ class SlackService:
     @staticmethod
     def chatMessage(text):
         data = {"channel": CHANNEL, "text": text}
-        requests.post(chat_url, headers=headers, data=data)
+        requests.post(chat_url, data=data)
 
     # ファイルアップロード
     @staticmethod
