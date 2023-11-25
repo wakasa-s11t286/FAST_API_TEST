@@ -19,9 +19,11 @@ class FAXOCR:
         )
 
         # ドキュメントを読み込みAPI実行
+        print("------------------OCR読み込み開始------------------")
         poller = document_analysis_client.begin_analyze_document(model_id, data)
         #with open(Document_Path, "rb") as f:
         #    poller = document_analysis_client.begin_analyze_document(model_id, f)
+        print("------------------OCR結果出力------------------")
         result = poller.result()
 
         # 結果の表示
