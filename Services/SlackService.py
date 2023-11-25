@@ -1,25 +1,22 @@
 import os
 
 import requests
-from dotenv import load_dotenv
-
-load_dotenv()
 
 TOKEN = os.environ.get("SLACK_TOKEN")
 CHANNEL = os.environ.get("SLACK_CHANNEL")
 
-chat_url = "https://slack.com/api/chat.postMessage"
-upload_url = "https://slack.com/api/files.upload"
-headers = {"Authorization": "Bearer " + TOKEN}
+CHAT_URL = os.environ.get("SLACK_CHAT_URL")
+UPLOAD_URL = os.environ.get("SLACK_UPLOAD_URL")
+
 
 
 class SlackService:
     # メッセージの送信
     @staticmethod
     def chatMessage(text):
+        headers = {"Authorization": "Bearer " + TOKEN}
         data = {"channel": CHANNEL, "text": text}
-        r = requests.post(chat_url, headers=headers, data=data)
-        print("return ", r.json())
+        requests.post(CHAT_URL, headers=headers, data=data)
 
     # ファイルアップロード
     @staticmethod
@@ -34,18 +31,14 @@ class SlackService:
             "filename": fileName,
             "filetype": fileType,
         }
-        r = requests.post(
-            upload_url,
+        requests.post(
+            UPLOAD_URL,
             data=data,
             files=files,
         )
-        print("return ", r.json())
 
     # 宛先、差出不明のfaxを通知
     def unknownFileNotice(files):
-        print(TOKEN)
-        print(CHANNEL)
-
         # メッセージの送信
         text = "送信先または送信元が不明のFaxを受信しました。"
         SlackService.chatMessage(text)

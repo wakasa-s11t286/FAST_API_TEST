@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from fastapi import Body, Depends, FastAPI, File, Form, UploadFile
 from pydantic import BaseModel
 
+from OCR.FAXOCR import FAXOCR
 from Services.CSVService import CSVService
 from Services.SlackService import SlackService
 from Services.Supabase.BusinessOfficeService import BusinessOfficeService
@@ -19,18 +20,8 @@ app = FastAPI()
 load_dotenv()  # .envファイルから環境変数を読み込む
 
 
-# リクエスト受け取るJSONの中身を定義
-# TODO：API増えなければ消す(現状未使用)
-class Info(BaseModel):
-    business_office_num1: str = None
-    business_office_num2: str = None
-    sample: str = None
-
-    # TODO:他にもあれば
-
-
 @app.post("/uploadfile")
-async def upload_file(info: str = Form(...), file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = File(...)):
     # async def upload_file(info: Info = Depends(), file: UploadFile = File(...)):
 
     # async def upload_file(
@@ -56,29 +47,25 @@ async def upload_file(info: str = Form(...), file: UploadFile = File(...)):
     sender_business_office_num = None
     recieved_id = None
     recieved_business_office_num = None
-
-    # JSONにマッピング
-    json_data = json.loads(info)
+    
+    # TODO:後で消す
     print("-------------リクエスト---------------")
-    print(json_data)
     print(file.filename)
+
 
     # ファイルをバイト変換
     bytes_data = await file.read()
-    # if f.content_type == "application/pdf":
+    
+    # FAX(PDF)をOCR解析
+    ocr_result = FAXOCR.analyticsPDF(bytes_data)
 
-    # JSONファイルの場合
-    # JSON変換 UTF-8でくる想定（TODO もし違う場合、decode("文字コード"）する)
-    # di = json.loads(bytes_data)
-
-    # TODO：事業所名のキーの確認
-    # 送信元 事業所
-    sender_name = json_data["jigyosyo1"]
-    # 送信先 事業所
-    recieved_name = json_data["jigyosyo2"]
+    # 送信元 事業所(居宅介護支援事業者事業所名)
+    sender_name = ocr_result.documents[0].fields["居宅介護支援事業者事業所名"].content
+    # 送信先 事業所(予実管理表（タイトル）の1行目のサービス事業者事業所名)
+    recieved_name = ocr_result.documents[0].fields["予実管理表（タイトル）"].value[0].value["サービス事業者事業所名"].content
 
     # JSON → CSV作成
-    temp_csv = CSVService.createCSV(json_data)
+    temp_csv = CSVService.createCSV(ocr_result.documents[0])
     # 作成したCSVデータをリストに追加
     file_data = {"type": "text/csv", "bytes": temp_csv}
     file_list.append(file_data)
